@@ -7,7 +7,6 @@ import { jwtAsyncConfig } from '@config/jwt.config';
 
 import { MailModule } from '@providers/mailer';
 import { ApnsModule } from '@providers/apns/apns.module';
-import { AppleAuthModule } from '@/providers/appleAuth';
 
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
@@ -28,7 +27,6 @@ import { StrapiApiClientService } from './services/strapi.service';
     JwtModule.registerAsync(jwtAsyncConfig),
     MailModule,
     ApnsModule,
-    AppleAuthModule,
   ],
   controllers: [AuthController, RegisterController, UserController],
   providers: [AuthService, RegisterService, LocalStrategy, JwtStrategy, UserService, StrapiApiClientService],

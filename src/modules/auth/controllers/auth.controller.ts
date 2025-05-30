@@ -11,7 +11,6 @@ import { AuthDto } from '../dtos/auth.dto';
 import { HashThisDto } from '../dtos/hashThis.dto';
 import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 import { GAuthDto } from '../dtos/gauth.dto';
-import { AppleAuthDto } from '../dtos/appleAuth.dto';
 
 @ApiTags('Auth')
 @Controller('v1/auth')
@@ -58,14 +57,5 @@ export class AuthController {
   @Post('gauth')
   async gauth(@Body() body: GAuthDto) {
     return this.authService.gauth(body.idToken);
-  }
-
-  @Public()
-  @ApiOperation({ summary: 'Apple Auth' })
-  @ApiResponse({ status: 200, type: LoginResponseDTO })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @Post('appleAuth')
-  async appleAuth(@Body() body: AppleAuthDto) {
-    return this.authService.appleAuth(body.authorizationCode, body.fullname);
   }
 }

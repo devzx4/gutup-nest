@@ -7,7 +7,6 @@ import { OAuth2Client } from 'google-auth-library';
 import { Password } from '@utils/password';
 import { Roles } from '@lib/types/user.types';
 import { ConfigService } from '@nestjs/config';
-import { AppleAuthService } from '@/providers/appleAuth';
 
 import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
@@ -20,7 +19,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private appleAuthService: AppleAuthService,
+    //private appleAuthService: AppleAuthService,
     private userService: UserService,
     @InjectRepository(User) private repo: Repository<User>,
   ) {
@@ -78,28 +77,6 @@ export class AuthService {
       }
     } catch (err) {
       throw new BadRequestException('Error during gauth');
-    }
-  }
-
-  async appleAuth(authorizationCode: string, fullname: string): Promise<LoginResponseDTO> {
-    try {
-      const payload = await this.appleAuthService.validateToken(authorizationCode);
-
-      const user = await this.repo.findOne({ where: { email: payload.email } });
-      if (user) {
-        // existing user
-        return await this.login(user, false); // continue with login flow
-      } else {
-        // new user
-        const newUser = await this.userService.register({
-          email: payload.email,
-          fullname,
-          role: Roles.Trainee, // INFO: only trainee accounts will be created during gauth
-        });
-        return await this.login(newUser, true); // continue with login flow
-      }
-    } catch (err) {
-      throw new BadRequestException('Error during Apple auth');
     }
   }
 }

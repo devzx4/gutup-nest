@@ -18,9 +18,7 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     database: configService.get<string>('PG_NAME'),
     password: configService.get<string>('PG_PASSWORD'),
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: false,
     subscribers: [UserSubscriber],
     // INFO: make sure to set synchronize to false and use migration for data change
     // synchronize: true,
