@@ -13,7 +13,7 @@ import { JwtStrategy } from './lib/jwt.strategy';
 import { LocalStrategy } from './lib/local.strategy';
 import { GoogleStrategy } from './lib/google.strategy';
 import { AuthService } from './services/auth.service';
-import { StrapiApiClientService } from './services/strapi.service';
+//import { StrapiApiClientService } from './services/strapi.service';
 import { UserAuth } from './entities/userAuth.entity';
 
 @Module({
@@ -30,7 +30,7 @@ import { UserAuth } from './entities/userAuth.entity';
     LocalStrategy,
     JwtStrategy,
     GoogleStrategy,
-    StrapiApiClientService,
+    //StrapiApiClientService,
   ],
   exports: [AuthService],
 })

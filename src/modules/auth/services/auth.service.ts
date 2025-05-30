@@ -72,9 +72,7 @@ export class AuthService {
         // existing user
         this.logger.log(`Existing user found for email: ${payload.email}`);
         // Check if user_auth record exists for this user
-        const userAuth = await this.userAuthRepo.findOne({ 
-          where: { user_id: user.id, auth_type: 'google' } 
-        });
+        const userAuth = await this.userAuthRepo.findOne({ where: { user_id: user.id, auth_type: 'google' } });
         // If no user_auth record but we have Google ID, create one
         if (!userAuth && payload.sub) {
           this.logger.log(`Creating user_auth record for existing user: ${user.id}`);

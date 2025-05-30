@@ -13,7 +13,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log(`Creating user with email: ${createUserDto.email}`);
-    
+
     // Set default values if not provided
     const userToCreate: CreateUserDto = {
       ...createUserDto,
@@ -29,11 +29,11 @@ export class UserService {
 
     // Create a new user entity
     const user = this.userRepo.create(userToCreate);
-    
+
     try {
       // Save the user and ensure we get a single User entity back
       const savedUser = await this.userRepo.save(user);
-      
+
       // TypeORM's save can return an array, but in this case we know it's a single entity
       return Array.isArray(savedUser) ? savedUser[0] : savedUser;
     } catch (error) {
