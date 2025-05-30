@@ -25,13 +25,4 @@ export class LoginResponseDTO {
   })
   @IsString()
   access_token: string;
-
-  @ApiProperty({
-    description: 'CMS token',
-    type: String,
-    example: '100',
-    nullable: true,
-  })
-  @IsString()
-  cms_token: string | null;
 }

@@ -40,16 +40,9 @@ export class UserService {
       sub: user.id,
     };
 
-    let cms_token: string | null = null;
-    if (this.strapiEnabled) {
-      const strapiUser = await this.strapiApi.loginUser(user.email);
-      cms_token = strapiUser.accessToken;
-    }
-
     return {
       user,
       access_token: this.jwtService.sign(payload),
-      cms_token,
     };
   }
 

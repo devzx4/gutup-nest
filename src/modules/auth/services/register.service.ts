@@ -7,7 +7,6 @@ import { isAfter } from 'date-fns/isAfter';
 import { randomUUID } from 'crypto';
 
 import { Roles } from '@lib/types/user.types';
-import { EMAIL_TEMPLATE, MailService } from '@providers/mailer';
 
 import { User } from '../entities/user.entity';
 import { Registration } from '../entities/registration.entity';
@@ -22,7 +21,6 @@ export class RegisterService {
 
   constructor(
     private configService: ConfigService,
-    private mailService: MailService,
     private userService: UserService,
     @InjectRepository(User) private repo: Repository<User>,
     @InjectRepository(Registration) private registrationRepo: Repository<Registration>,
@@ -82,15 +80,6 @@ export class RegisterService {
       // TODO: check if best way is to hash random UUID before storing it on the DB and the raw version is not stored but only sent in the email link
       const code = randomUUID();
       await this.registrationRepo.insert({ email, code });
-      await this.mailService.sendMail(
-        [{ email, name: email }],
-        'NERVA PLUS Account Verification',
-        EMAIL_TEMPLATE.REGISTRATION,
-        {
-          NAME: 'Mate',
-          LINK: code, // TODO: add the correct link containing the email and code
-        },
-      );
     }
   }
 }

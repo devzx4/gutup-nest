@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { jwtAsyncConfig } from '@config/jwt.config';
 
-import { MailModule } from '@providers/mailer';
 import { ApnsModule } from '@providers/apns/apns.module';
 
 import { AuthService } from './services/auth.service';
@@ -25,7 +24,6 @@ import { StrapiApiClientService } from './services/strapi.service';
     TypeOrmModule.forFeature([User, Registration]),
     PassportModule,
     JwtModule.registerAsync(jwtAsyncConfig),
-    MailModule,
     ApnsModule,
   ],
   controllers: [AuthController, RegisterController, UserController],
