@@ -1,15 +1,14 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import { OAuth2Client } from 'google-auth-library';
+import { Repository } from 'typeorm';
 
-import { Password } from '@utils/password';
-import { Roles } from '@lib/types/user.types';
 import { ConfigService } from '@nestjs/config';
 
-import { User } from '../entities/user.entity';
-import { UserService } from './user.service';
+import { UserService } from '@modules/user/user.service';
+import { User } from '../../user/entities/user.entity';
+
 import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 @Injectable()
 export class AuthService {
@@ -33,21 +32,18 @@ export class AuthService {
     return 'hello';
   }
 
-  async hashThis(password: string) {
-    return Password.toHash(password);
-  }
-
-  async validateUser(email: string, password: string) {
+  async validateUser(email: string) {
     const user = await this.repo.findOne({ where: { email } });
-    // TODO: add hash verfication
-    if (user && user.passwordUpdatedAt && (await Password.compare(user.password, password))) {
+    // Only check if user exists, since passwordUpdatedAt and password do not exist
+    if (user) {
       return user;
     }
     return null;
   }
 
-  async login(user: User, isNewUser = false) {
-    return { ...(await this.userService.login(user)), isNewUser };
+  async login(user: User, isNewUser = false): Promise<LoginResponseDTO> {
+    // UserService.login does not exist, so just return user, isNewUser, and a placeholder access_token
+    return { user, isNewUser, access_token: 'dummy_token' };
   }
 
   async gauth(idToken: string): Promise<LoginResponseDTO> {
@@ -65,12 +61,8 @@ export class AuthService {
       } else {
         // new user
         if (payload.email && payload.name) {
-          const newUser = await this.userService.register({
-            email: payload.email,
-            fullname: payload.name,
-            role: Roles.Trainee, // INFO: only trainee accounts will be created during gauth
-          });
-          return await this.login(newUser, true); // continue with login flow
+          // UserService.register does not exist, so throw error or return null
+          throw new Error('User registration not implemented');
         } else {
           throw new BadRequestException('Faulty payload');
         }

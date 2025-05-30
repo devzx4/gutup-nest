@@ -21,7 +21,7 @@ const dataSourceOptions: DataSourceOptions = {
   // INFO: uncomment when in debug mode to see all query related logs
   logging: true,
   // INFO: make sure to set synchronize to false and use migration for data change
-  // synchronize: true,
+  //synchronize: true,
 };
 
 // INFO: this is a workaround for dotenv working for migrations and seeders config

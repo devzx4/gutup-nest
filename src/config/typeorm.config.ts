@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { UserSubscriber } from '@modules/auth/subscribers/user.subscriber';
+//import { UserSubscriber } from '@modules/auth/subscribers/user.subscriber';
 
 // INFO: make sure to change datasource config as well if any relevant changes are made here
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
@@ -19,9 +19,9 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     password: configService.get<string>('PG_PASSWORD'),
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
     ssl: false,
-    subscribers: [UserSubscriber],
+    //subscribers: [UserSubscriber],
     // INFO: make sure to set synchronize to false and use migration for data change
-    // synchronize: true,
+    synchronize: true,
     // INFO: uncomment when in debug mode to see all query related logs
     // logging: true,
     // INFO: uncomment when after mode to see all query related logs

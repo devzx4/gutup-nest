@@ -1,16 +1,14 @@
-import { Controller, Get, UseGuards, Post, Request, Body, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { LocalAuthGuard } from '@lib/guards/local-auth.guard';
 import { DefaultAuth } from '@lib/decorators/DefaultAuth.decorator';
 import { Public } from '@lib/decorators/Public.decorator';
-import { CurrentUser } from '@lib/decorators/CurrentUser.decorator';
+import { LocalAuthGuard } from '@lib/guards/local-auth.guard';
 
-import { AuthService } from '../services/auth.service';
 import { AuthDto } from '../dtos/auth.dto';
-import { HashThisDto } from '../dtos/hashThis.dto';
-import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 import { GAuthDto } from '../dtos/gauth.dto';
+import { LoginResponseDTO } from '../dtos/login-reponse.dto';
+import { AuthService } from '../services/auth.service';
 
 @ApiTags('Auth')
 @Controller('v1/auth')
@@ -26,14 +24,6 @@ export class AuthController {
   }
 
   @Public()
-  @Get('hashThis')
-  @ApiOperation({ summary: 'Hash the supplied string' })
-  @ApiResponse({ status: 200 })
-  hashThis(@Query() query: HashThisDto) {
-    return this.authService.hashThis(query.password);
-  }
-
-  @Public()
   @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({ status: 200, type: LoginResponseDTO })
@@ -46,8 +36,9 @@ export class AuthController {
   @ApiResponse({ status: 200 })
   @DefaultAuth()
   @Get('protected')
-  async protectedRoute(@CurrentUser() user) {
-    return user;
+  async protectedRoute() {
+    // Placeholder: implement user extraction if needed
+    return { message: 'Protected route accessed' };
   }
 
   @Public()

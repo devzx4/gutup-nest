@@ -1,33 +1,29 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
+//import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
 import { jwtAsyncConfig } from '@config/jwt.config';
 
+import { User } from '@modules/user/entities/user.entity';
+import { UserModule } from '@modules/user/user.module';
 import { ApnsModule } from '@providers/apns/apns.module';
-
-import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
-import { User } from './entities/user.entity';
-import { Registration } from './entities/registration.entity';
-import { LocalStrategy } from './lib/local.strategy';
 import { JwtStrategy } from './lib/jwt.strategy';
-import { RegisterService } from './services/register.service';
-import { RegisterController } from './controllers/register.controller';
-import { UserService } from './services/user.service';
-import { UserController } from './controllers/user.controller';
+import { LocalStrategy } from './lib/local.strategy';
+import { AuthService } from './services/auth.service';
 import { StrapiApiClientService } from './services/strapi.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Registration]),
-    PassportModule,
+    TypeOrmModule.forFeature([User]),
+    //PassportModule,
     JwtModule.registerAsync(jwtAsyncConfig),
     ApnsModule,
+    UserModule, // Import UserModule to provide UserService
   ],
-  controllers: [AuthController, RegisterController, UserController],
-  providers: [AuthService, RegisterService, LocalStrategy, JwtStrategy, UserService, StrapiApiClientService],
-  exports: [AuthService, RegisterService],
+  controllers: [AuthController],
+  providers: [AuthService, LocalStrategy, JwtStrategy, StrapiApiClientService],
+  exports: [AuthService],
 })
 export class AuthModule {}

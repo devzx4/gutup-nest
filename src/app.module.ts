@@ -11,6 +11,7 @@ import { JwtAuthGuard } from '@lib/guards/jwt-auth.guard';
 import featureConfig from '@config/feature.config';
 
 import { ApnsModule } from './providers/apns/apns.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ApnsModule } from './providers/apns/apns.module';
     HttpModule,
     ShalomModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [],
   providers: [

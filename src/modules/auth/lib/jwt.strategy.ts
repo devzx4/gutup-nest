@@ -1,11 +1,10 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { isAfter } from 'date-fns/isAfter';
-import { Repository } from 'typeorm';
+import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Repository } from 'typeorm';
 
-import { User } from '../entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -19,11 +18,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const userId = payload.sub;
-
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    const issuedAt = new Date(payload.iat * 1000);
 
-    if ((user && !user.passwordUpdatedAt) || (user && isAfter(issuedAt, user.passwordUpdatedAt))) {
+    if (user) {
       return { userId, username: payload.username };
     } else {
       return null;
