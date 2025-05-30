@@ -15,7 +15,6 @@ export class LoginResponseDTO {
     type: Boolean,
     example: false,
   })
-  @IsString()
   isNewUser: boolean;
 
   @ApiProperty({

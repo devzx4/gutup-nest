@@ -25,4 +25,7 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
+  
+  // You can add a test for the Google OAuth flow here if needed
+  // This would be a more complex test that might require mocking OAuth responses
 });

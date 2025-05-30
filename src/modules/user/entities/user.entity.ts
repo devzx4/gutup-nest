@@ -11,7 +11,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: false, default: 'unspecified' })
   gender: string;
 
   @Column()

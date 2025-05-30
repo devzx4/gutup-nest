@@ -6,12 +6,12 @@ export class UserAuth {
   id: number;
 
   @Column()
-  auth_type: string;
+  auth_type: string; // 'google', 'email', etc.
 
-  @Column()
+  @Column({ nullable: true, default: '' })
   google_id: string;
 
-  @Column()
+  @Column({ nullable: true, default: '' })
   password_hash: string;
 
   @Column()

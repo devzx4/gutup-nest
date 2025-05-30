@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Request, UseGuards, Res, Logger } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { DefaultAuth } from '@lib/decorators/DefaultAuth.decorator';
@@ -9,11 +10,20 @@ import { AuthDto } from '../dtos/auth.dto';
 import { GAuthDto } from '../dtos/gauth.dto';
 import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 import { AuthService } from '../services/auth.service';
+import { UserService } from '../../user/user.service';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Auth')
 @Controller('v1/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  private readonly logger = new Logger(AuthController.name);
+
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private configService: ConfigService,
+  ) {}
 
   @Public()
   @Get('test')
@@ -37,7 +47,6 @@ export class AuthController {
   @DefaultAuth()
   @Get('protected')
   async protectedRoute() {
-    // Placeholder: implement user extraction if needed
     return { message: 'Protected route accessed' };
   }
 
@@ -48,5 +57,37 @@ export class AuthController {
   @Post('gauth')
   async gauth(@Body() body: GAuthDto) {
     return this.authService.gauth(body.idToken);
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth Login' })
+  async googleAuth(@Req() req) {
+    this.logger.log('Google auth flow initiated');
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth Callback' })
+  @ApiResponse({ status: 200, type: LoginResponseDTO })
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    this.logger.log('Google auth callback received');
+    try {
+      const loginResponse: LoginResponseDTO = req.user;
+      this.logger.log(`Login successful for user: ${loginResponse.user.email}`);
+      const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+      if (frontendUrl) {
+        const redirectUrl = `${frontendUrl}/auth/google-callback?token=${loginResponse.access_token}&isNewUser=${loginResponse.isNewUser}`;
+        this.logger.log(`Redirecting to: ${redirectUrl}`);
+        return res.redirect(redirectUrl);
+      } else {
+        return res.json(loginResponse);
+      }
+    } catch (error) {
+      this.logger.error(`Google callback error: ${error.message}`);
+      return res.status(500).json({ error: 'Authentication failed' });
+    }
   }
 }
