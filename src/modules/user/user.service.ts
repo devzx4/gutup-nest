@@ -1,15 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserAuth } from '@modules/auth/entities/userAuth.entity';
+import { Password } from '@utils/password';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(UserAuth) private userAuthRepo: Repository<UserAuth>,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log(`Creating user with email: ${createUserDto.email}`);
@@ -18,7 +23,7 @@ export class UserService {
     const userToCreate: CreateUserDto = {
       ...createUserDto,
       created_at: createUserDto.created_at || new Date(),
-      user_role: createUserDto.user_role || 'trainee',
+      user_role: createUserDto.user_role || 'customer',
       daily_score: createUserDto.daily_score || 0,
       current_diet: createUserDto.current_diet || 'unspecified',
       rhythm_of_life: createUserDto.rhythm_of_life || 'unspecified',
@@ -27,6 +32,12 @@ export class UserService {
 
     this.logger.log(`Creating user with data: ${JSON.stringify(userToCreate)}`);
 
+    // Check if user already exists
+    const existing = await this.userRepo.findOne({ where: { email: userToCreate.email } });
+    if (existing) {
+      throw new BadRequestException('User already exists');
+    }
+
     // Create a new user entity
     const user = this.userRepo.create(userToCreate);
 
@@ -34,7 +45,18 @@ export class UserService {
       // Save the user and ensure we get a single User entity back
       const savedUser = await this.userRepo.save(user);
 
-      // TypeORM's save can return an array, but in this case we know it's a single entity
+      // Create user_auth record with hashed password if password is provided
+      if ((createUserDto as any).password) {
+        const passwordHash = await Password.toHash((createUserDto as any).password);
+        const userAuth = this.userAuthRepo.create({
+          user_id: savedUser.id,
+          auth_type: 'email',
+          password_hash: passwordHash,
+          google_id: '',
+        });
+        await this.userAuthRepo.save(userAuth);
+      }
+
       return Array.isArray(savedUser) ? savedUser[0] : savedUser;
     } catch (error) {
       this.logger.error(`Failed to create user: ${error.message}`);

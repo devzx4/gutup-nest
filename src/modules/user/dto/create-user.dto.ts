@@ -33,8 +33,13 @@ export class CreateUserDto {
   @IsOptional()
   daily_score?: number;
 
-  @ApiProperty({ example: 'trainee', description: 'User role', required: false })
+  @ApiProperty({ example: 'customer', description: 'User role', required: false })
   @IsOptional()
   @IsString()
   user_role?: string;
+
+  @ApiProperty({ example: 'password123', description: 'User password', required: false })
+  @IsOptional()
+  @IsString()
+  password?: string;
 }

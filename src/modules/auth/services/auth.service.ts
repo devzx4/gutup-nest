@@ -10,8 +10,8 @@ import { UserService } from '@modules/user/user.service';
 import { User } from '../../user/entities/user.entity';
 import { UserAuth } from '../entities/userAuth.entity';
 
-import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 import { CreateUserDto } from '@modules/user/dto/create-user.dto';
+import { LoginResponseDTO } from '../dtos/login-reponse.dto';
 
 interface GoogleUserData {
   email: string;
@@ -88,7 +88,7 @@ export class AuthService {
             name: payload.name,
             gender: 'unspecified',
             created_at: new Date(),
-            user_role: 'trainee',
+            user_role: 'customer',
             current_diet: 'unspecified',
             rhythm_of_life: 'unspecified',
             daily_score: 0,
@@ -140,7 +140,7 @@ export class AuthService {
           name: userData.name,
           gender: 'unspecified', // Add default gender value here
           created_at: new Date(),
-          user_role: 'trainee',
+          user_role: 'customer',
           current_diet: 'unspecified',
           rhythm_of_life: 'unspecified',
           daily_score: 0,
