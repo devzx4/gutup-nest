@@ -53,7 +53,7 @@ export class AuthService {
 
   async login(user: User, isNewUser = false): Promise<LoginResponseDTO> {
     this.logger.log(`Creating JWT token for user ${user.email}`);
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, user_role: user.user_role };
     const access_token = this.jwtService.sign(payload);
     return { user, isNewUser, access_token };
   }
