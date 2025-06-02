@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from '@lib/decorators/Public.decorator';
 import { DefaultAuth } from '@lib/decorators/DefaultAuth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserResponseDto } from './dto/user-response.dto';
+import { AdminUserResponseDto, UserResponseDto } from './dto/user-response.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -45,6 +45,14 @@ export class UserController {
   @ApiBearerAuth('JWT-auth')
   async getCurrentUser(@Request() req) {
     const userId = req.user.userId;
-    return this.userService.findById(userId);
+    const user = await this.userService.findById(userId);
+
+    if (user.user_role === 'admin') {
+      //return admin DTO (without survey data)
+      return new AdminUserResponseDto(user);
+    } else {
+      // Return customer DTO (with survey_data)
+      return new UserResponseDto(user);
+    }
   }
 }
