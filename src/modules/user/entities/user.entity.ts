@@ -11,8 +11,11 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ nullable: false, default: 'unspecified' })
+  @Column({ nullable: true, default: '' })
   gender: string;
+
+  @Column({ nullable: true })
+  birth_date: Date;
 
   @Column()
   created_at: Date;
@@ -28,4 +31,7 @@ export class User {
 
   @Column()
   user_role: string;
+
+  @Column({ default: false })
+  survey_data: boolean;
 }

@@ -12,6 +12,7 @@ import featureConfig from '@config/feature.config';
 
 import { ApnsModule } from './providers/apns/apns.module';
 import { UserModule } from './modules/user/user.module';
+import { ApiController } from './api.controller';
 
 @Module({
   imports: [
@@ -21,14 +22,14 @@ import { UserModule } from './modules/user/user.module';
     ShalomModule,
     AuthModule,
     UserModule,
+    ApnsModule,
   ],
-  controllers: [],
+  controllers: [ApiController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    ApnsModule,
   ],
 })
 export class AppModule {}

@@ -87,11 +87,13 @@ export class AuthService {
             email: payload.email,
             name: payload.name,
             gender: 'unspecified',
+            birth_date: null, // Don't set a default birth_date
             created_at: new Date(),
             user_role: 'customer',
             current_diet: 'unspecified',
             rhythm_of_life: 'unspecified',
             daily_score: 0,
+            survey_data: false, // New users from OAuth don't have survey data by default
           };
           user = await this.userService.create(newUserDto);
           // Create auth record for the new user
@@ -138,12 +140,14 @@ export class AuthService {
         const newUserDto: CreateUserDto = {
           email: userData.email,
           name: userData.name,
-          gender: 'unspecified', // Add default gender value here
+          gender: 'unspecified',
+          birth_date: null, // Don't set a default birth_date
           created_at: new Date(),
           user_role: 'customer',
           current_diet: 'unspecified',
           rhythm_of_life: 'unspecified',
           daily_score: 0,
+          survey_data: false, // New users from OAuth don't have survey data by default
         };
 
         user = await this.userService.create(newUserDto);

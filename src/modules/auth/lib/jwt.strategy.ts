@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -8,34 +8,32 @@ import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
+
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
+    this.logger.log(`JWT Strategy initialized with secret: ${process.env.JWT_SECRET ? '******' : 'undefined'}`);
   }
 
   async validate(payload: any) {
+    this.logger.log(`JWT Payload received: ${JSON.stringify(payload, null, 2)}`);
     const userId = payload.sub;
 
-    // It's good practice to re-fetch the user to ensure they still exist and are active,
-    // though for just returning payload data, this is also common.
-    // const user = await this.userRepo.findOne({ where: { id: userId } });
-    // if (!user) return null;
-
-    // Assuming payload now contains sub, email, and user_role
     if (payload.sub && payload.email && payload.user_role) {
+      this.logger.log(`User auth validated for user ID: ${userId}`);
       return { userId: payload.sub, email: payload.email, role: payload.user_role };
     } else {
-      // Handle cases where the token might be from an older version without the role
-      // Or simply return null if the expected payload structure isn't met.
-      // For simplicity, if you expect all tokens to have these fields:
+      this.logger.warn(`Incomplete token payload, attempting to fetch user data`);
       const user = await this.userRepo.findOne({ where: { id: userId } });
       if (user) {
-        // Fallback or ensure all necessary fields are present
+        this.logger.log(`Found user in database: ${user.email}`);
         return { userId: user.id, email: user.email, role: user.user_role };
       }
+      this.logger.error(`User with ID ${userId} not found`);
       return null;
     }
   }

@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsBoolean, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -10,21 +10,26 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'unspecified', description: 'User gender', required: false })
+  @ApiProperty({ example: '', description: 'User gender', required: false })
   @IsOptional()
   @IsString()
   gender?: string;
+
+  @ApiProperty({ description: 'User birth date (ISO string)', required: false })
+  @IsOptional()
+  @IsDateString()
+  birth_date?: Date;
 
   @ApiProperty({ description: 'User creation date', required: false })
   @IsOptional()
   created_at?: Date;
 
-  @ApiProperty({ example: 'unspecified', description: 'User diet preference', required: false })
+  @ApiProperty({ example: '', description: 'User diet preference', required: false })
   @IsOptional()
   @IsString()
   current_diet?: string;
 
-  @ApiProperty({ example: 'unspecified', description: 'User rhythm of life', required: false })
+  @ApiProperty({ example: '', description: 'User rhythm of life', required: false })
   @IsOptional()
   @IsString()
   rhythm_of_life?: string;
@@ -42,4 +47,9 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   password?: string;
+
+  @ApiProperty({ example: false, description: 'Whether user has completed survey data', required: false })
+  @IsOptional()
+  @IsBoolean()
+  survey_data?: boolean;
 }
